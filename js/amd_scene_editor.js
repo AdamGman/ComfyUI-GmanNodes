@@ -55,9 +55,13 @@ function makeRow(node, i, initial) {
     return { wrap, img, textarea: ta };
 }
 
+const ROW_H = 84;
+const ROW_TOTAL = ROW_H + 4;
+
 function rebuildRows(node) {
     const n = Math.max(1, Math.round(findWidget(node, "num_scenes")?.value || 1));
     const lines = overridesLines(node);
+    const prevCount = node._amdRows ? node._amdRows.length : null;
     // remove old row widgets
     if (node._amdRows) {
         for (const r of node._amdRows) {
@@ -71,18 +75,39 @@ function rebuildRows(node) {
         const row = makeRow(node, i, (lines[i] || "").trim());
         const widget = node.addDOMWidget(ROW_PREFIX + i, "div", row.wrap, {
             serialize: false,
-            getMinHeight: () => 84,
-            getHeight: () => 84,
+            getMinHeight: () => ROW_H,
+            getMaxHeight: () => ROW_H,
+            getHeight: () => ROW_H,
         });
         if (widget) {
             widget.serializeValue = () => undefined;
-            widget.computeSize = (w) => [w, 84];
+            widget.computeSize = (w) => [w, ROW_H];
         }
         row.widget = widget;
         node._amdRows.push(row);
     }
     syncOverrides(node);
-    requestAnimationFrame(() => node.setSize(node.computeSize()));
+    if (prevCount === null) {
+        // first layout of the node: one full size computation
+        requestAnimationFrame(() => node.setSize(node.computeSize()));
+    } else if (n !== prevCount) {
+        // steady state: grow/shrink by exactly the rows delta so nothing else moves
+        node.setSize([node.size[0], node.size[1] + (n - prevCount) * ROW_TOTAL]);
+    }
+    node.setDirtyCanvas(true, true);
+}
+
+function pinPromptHeight(node) {
+    const gp = findWidget(node, "global_prompt");
+    if (gp) {
+        gp.options = gp.options || {};
+        gp.options.getMinHeight = () => 150;
+        gp.options.getMaxHeight = () => 150;
+        if (gp.inputEl) {
+            gp.inputEl.style.height = "150px";
+            gp.inputEl.style.resize = "none";
+        }
+    }
 }
 
 function rendererIdFor(planner) {
@@ -121,7 +146,10 @@ app.registerExtension({
                     return res;
                 };
             }
-            setTimeout(() => rebuildRows(node), 0);
+            setTimeout(() => {
+                pinPromptHeight(node);
+                rebuildRows(node);
+            }, 0);
             return r;
         };
 
