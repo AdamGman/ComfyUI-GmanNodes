@@ -1,0 +1,571 @@
+{
+  "id": "auto-movie-director",
+  "revision": 0,
+  "last_node_id": 12,
+  "last_link_id": 9,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "MarkdownNote",
+      "pos": [
+        40,
+        -300
+      ],
+      "size": [
+        1520,
+        260
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# 🎬 AUTO MOVIE DIRECTOR\n\n## 1 — WRITE: type your movie idea in the Planner. Set scenes & seconds.\n\n## 2 — PREVIEW: mode = `1) storyboard preview` → press Queue. Storyboard appears on the Renderer + saved to `output/auto_movie/`.\n\n## 3 — APPROVE: happy? Touch nothing. Not happy? Edit idea/overrides, Queue again.\n\n## 4 — RENDER: flip mode to `2) full movie` → Queue. Scenes start from your approved frames, get motion + sound, stitched into one MP4.\n"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "UnetLoaderGGUF",
+      "pos": [
+        40,
+        60
+      ],
+      "size": [
+        400,
+        60
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "UnetLoaderGGUF"
+      },
+      "widgets_values": [
+        "ltx-2.3-22b-dev-Q4_K_M.gguf"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoraLoaderModelOnly",
+      "pos": [
+        40,
+        180
+      ],
+      "size": [
+        400,
+        90
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            2
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraLoaderModelOnly"
+      },
+      "widgets_values": [
+        "ltx-2.3-22b-distilled-lora-dynamic_fro09_avg_rank_105_bf16.safetensors",
+        1.0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "LoraLoaderModelOnly",
+      "pos": [
+        40,
+        290
+      ],
+      "size": [
+        400,
+        90
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            3
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraLoaderModelOnly"
+      },
+      "widgets_values": [
+        "LTX2.3_Crisp_Enhance.safetensors",
+        0.5
+      ],
+      "title": "Crisp Enhance (optional - delete if you lack the LoRA)"
+    },
+    {
+      "id": 5,
+      "type": "DualCLIPLoader",
+      "pos": [
+        40,
+        430
+      ],
+      "size": [
+        400,
+        130
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            4
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "DualCLIPLoader"
+      },
+      "widgets_values": [
+        "gemma_3_12B_it_fp4_mixed.safetensors",
+        "ltx-2.3_text_projection_bf16.safetensors",
+        "ltxv",
+        "default"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "VAELoader",
+      "pos": [
+        40,
+        620
+      ],
+      "size": [
+        400,
+        60
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            5
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "LTX23_video_vae_bf16.safetensors"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "VAELoader",
+      "pos": [
+        40,
+        730
+      ],
+      "size": [
+        400,
+        60
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            6
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "LTX23_audio_vae_bf16.safetensors"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "LatentUpscaleModelLoader",
+      "pos": [
+        40,
+        840
+      ],
+      "size": [
+        400,
+        60
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT_UPSCALE_MODEL",
+          "type": "LATENT_UPSCALE_MODEL",
+          "links": [
+            8
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LatentUpscaleModelLoader"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "AMD_MoviePlanner",
+      "pos": [
+        520,
+        60
+      ],
+      "size": [
+        580,
+        760
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "scene_plan",
+          "type": "STRING",
+          "links": [
+            7
+          ],
+          "slot_index": 0
+        },
+        {
+          "name": "plot_text",
+          "type": "STRING",
+          "links": [
+            9
+          ],
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AMD_MoviePlanner"
+      },
+      "widgets_values": [
+        "A small boxy rust-orange robot rolling on two black tank treads, with one big round glowing cyan eye in a dome head and two thin piston arms, tends a rooftop garden in a rainy cyberpunk city. It discovers a single glowing blue flower, shields it through a night storm, and at dawn the whole rooftop blooms.",
+        12,
+        5.0,
+        "photorealistic, moody volumetric light, shallow depth of field, rich detail, full frame composition",
+        true,
+        "qwen3.6:latest",
+        "http://127.0.0.1:11434",
+        "",
+        21
+      ]
+    },
+    {
+      "id": 10,
+      "type": "AMD_MovieRenderer",
+      "pos": [
+        1140,
+        60
+      ],
+      "size": [
+        460,
+        560
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 3
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 4
+        },
+        {
+          "name": "video_vae",
+          "type": "VAE",
+          "link": 5
+        },
+        {
+          "name": "audio_vae",
+          "type": "VAE",
+          "link": 6
+        },
+        {
+          "name": "scene_plan",
+          "type": "STRING",
+          "link": 7
+        },
+        {
+          "name": "upscale_model",
+          "type": "LATENT_UPSCALE_MODEL",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "movie_path",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "AMD_MovieRenderer"
+      }
+    },
+    {
+      "id": 11,
+      "type": "MarkdownNote",
+      "pos": [
+        1660,
+        60
+      ],
+      "size": [
+        420,
+        300
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "# ⬅ THE BIG SWITCH: mode\n\n## 1) storyboard preview\n### fast frames = your movie's first frames\n\n## 2) full movie (img2vid)\n### every scene STARTS from its approved storyboard frame\n\n## full movie (pure text2vid)\n### skip the storyboard, prompt-only scenes\n\n# Preview → approve → flip to 2) → Queue"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 12,
+      "type": "PreviewAny",
+      "pos": [
+        1660,
+        420
+      ],
+      "size": [
+        420,
+        380
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "MODEL"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "MODEL"
+    ],
+    [
+      3,
+      4,
+      0,
+      10,
+      0,
+      "MODEL"
+    ],
+    [
+      4,
+      5,
+      0,
+      10,
+      1,
+      "CLIP"
+    ],
+    [
+      5,
+      6,
+      0,
+      10,
+      2,
+      "VAE"
+    ],
+    [
+      6,
+      7,
+      0,
+      10,
+      3,
+      "VAE"
+    ],
+    [
+      7,
+      9,
+      0,
+      10,
+      4,
+      "STRING"
+    ],
+    [
+      8,
+      8,
+      0,
+      10,
+      5,
+      "LATENT_UPSCALE_MODEL"
+    ],
+    [
+      9,
+      9,
+      1,
+      12,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [
+    {
+      "title": "🎛  MODELS — set once",
+      "bounding": [
+        20,
+        -10,
+        450,
+        950
+      ],
+      "color": "#3f5159",
+      "font_size": 22,
+      "flags": {},
+      "id": 1
+    },
+    {
+      "title": "✍  1 · WRITE YOUR MOVIE",
+      "bounding": [
+        500,
+        -10,
+        630,
+        860
+      ],
+      "color": "#4a5a3f",
+      "font_size": 22,
+      "flags": {},
+      "id": 2
+    },
+    {
+      "title": "🎬  2 · DIRECT → RENDER (mode switch!)",
+      "bounding": [
+        1120,
+        -10,
+        510,
+        660
+      ],
+      "color": "#5a4a3f",
+      "font_size": 22,
+      "flags": {},
+      "id": 3
+    },
+    {
+      "title": "📋  SCRIPT & HELP",
+      "bounding": [
+        1640,
+        -10,
+        470,
+        820
+      ],
+      "color": "#42425c",
+      "font_size": 22,
+      "flags": {},
+      "id": 4
+    }
+  ],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}
