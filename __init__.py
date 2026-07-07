@@ -293,7 +293,7 @@ class AMD_MovieRenderer:
                 "sampler": (comfy.samplers.SAMPLER_NAMES, {"default": "euler"}),
                 "scheduler": (comfy.samplers.SCHEDULER_NAMES, {"default": "linear_quadratic"}),
                 "seed": ("INT", {"default": 42, "min": 0, "max": 2**63 - 1, "control_after_generate": False}),
-                "preview_size": ("INT", {"default": 768, "min": 256, "max": 1536, "step": 32, "tooltip": "Width of the fast editor-preview frames. Smaller = faster storyboard."}),
+                "preview_size": ("INT", {"default": 1024, "min": 256, "max": 1536, "step": 32, "tooltip": "Width of the fast storyboard preview frames. Previews are composition proofs - faces and fine detail refine in the full render. Raise toward 1536 for prettier previews of people, lower for speed."}),
                 "storyboard_strength": ("FLOAT", {"default": 0.8, "min": 0.1, "max": 1.0, "step": 0.05, "tooltip": "How strongly each scene sticks to its storyboard frame in img2vid mode. Lower = more natural/free, higher = more faithful to the exact frame."}),
                 "filename_prefix": ("STRING", {"default": "auto_movie"}),
                 "output_dir": ("STRING", {"default": "", "tooltip": "Optional extra folder for the final movie. Always also saved to the ComfyUI output folder."}),
@@ -660,6 +660,8 @@ class AMD_Storyboard:
                     fr.save(os.path.join(save_dir, f"scene_{idx:02d}.png"))
                 board.save(os.path.join(save_dir, "storyboard.png"))
                 with open(os.path.join(save_dir, "scenes.txt"), "w", encoding="utf-8") as f:
+                    f.write("NOTE: scene_XX.png are fast low-res composition previews - faces and fine "
+                            "detail refine in the full render. Judge framing and story here, not skin.\n\n")
                     f.write((plan.get("plot", "") + "\n\nCHARACTER SHEET\n" + plan.get("sheet", "")).strip() + "\n\n")
                     for s in scenes:
                         f.write(f"[Scene {s['index'] + 1} - {s['seconds']:.1f}s]\n{s.get('core', s['prompt'])}\n\n")
