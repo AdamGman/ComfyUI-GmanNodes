@@ -15,7 +15,7 @@
 
 </div>
 
-![pipeline](docs/pipeline_v2.png)
+![pipeline](docs/pipeline_v3.png)
 
 <div align="center">
 
@@ -47,7 +47,7 @@ That's the storyboard. Approve it, set mode to `2) full movie`, Queue again. üç
 
 ## How long does it take?
 
-![render times](docs/timings_v2.png)
+![render times](docs/timings_v3.png)
 
 ## Everything is a dial
 
