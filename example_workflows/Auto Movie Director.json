@@ -275,8 +275,8 @@
         60
       ],
       "size": [
-        460,
-        560
+        580,
+        760
       ],
       "flags": {},
       "order": 8,
@@ -325,7 +325,7 @@
       "id": 10,
       "type": "AMD_MovieRenderer",
       "pos": [
-        1060,
+        1140,
         60
       ],
       "size": [
@@ -383,7 +383,7 @@
       "id": 11,
       "type": "MarkdownNote",
       "pos": [
-        1580,
+        1660,
         60
       ],
       "size": [
@@ -406,7 +406,7 @@
       "id": 12,
       "type": "PreviewAny",
       "pos": [
-        1580,
+        1660,
         420
       ],
       "size": [
@@ -530,8 +530,8 @@
       "bounding": [
         500,
         -10,
-        510,
-        660
+        630,
+        860
       ],
       "color": "#4a5a3f",
       "font_size": 22,
@@ -541,7 +541,7 @@
     {
       "title": "🎬  2 · DIRECT → RENDER (mode switch!)",
       "bounding": [
-        1040,
+        1120,
         -10,
         510,
         660
@@ -554,7 +554,7 @@
     {
       "title": "📋  SCRIPT & HELP",
       "bounding": [
-        1560,
+        1640,
         -10,
         470,
         820

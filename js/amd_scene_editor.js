@@ -88,8 +88,11 @@ function rebuildRows(node) {
     }
     syncOverrides(node);
     if (prevCount === null) {
-        // first layout of the node: one full size computation
-        requestAnimationFrame(() => node.setSize(node.computeSize()));
+        // first layout of the node: one full size computation, and a comfortable width
+        requestAnimationFrame(() => {
+            const s = node.computeSize();
+            node.setSize([Math.max(node.size[0], 560), s[1]]);
+        });
     } else if (n !== prevCount) {
         // steady state: grow/shrink by exactly the rows delta so nothing else moves
         node.setSize([node.size[0], node.size[1] + (n - prevCount) * ROW_TOTAL]);
@@ -97,12 +100,25 @@ function rebuildRows(node) {
     node.setDirtyCanvas(true, true);
 }
 
+function hideStockWidget(w) {
+    if (!w) return;
+    w.computeSize = () => [0, -4];
+    w.hidden = true;
+    for (const el of [w.inputEl, w.element]) {
+        if (el && el.style) {
+            el.style.display = "none";
+            el.style.pointerEvents = "none";
+            el.style.width = "0";
+            el.style.height = "0";
+        }
+    }
+}
+
 function buildIdeaBox(node) {
     const gpW = findWidget(node, "global_prompt");
     if (!gpW || node._amdIdea) return;
-    // hide the stock flexible widget; we render our own fixed-height box synced to it
-    gpW.computeSize = () => [0, -4];
-    if (gpW.inputEl) gpW.inputEl.style.display = "none";
+    // hide the stock flexible widget completely; we render our own fixed-height box synced to it
+    hideStockWidget(gpW);
 
     const wrap = document.createElement("div");
     wrap.style.cssText = "width:100%;height:100%;box-sizing:border-box;padding:1px;";
@@ -125,12 +141,6 @@ function buildIdeaBox(node) {
     if (w) {
         w.serializeValue = () => undefined;
         w.computeSize = (ww) => [ww, 170];
-        const wi = node.widgets.indexOf(w);
-        const gi = node.widgets.indexOf(gpW);
-        if (wi >= 0 && gi >= 0 && wi !== gi + 1) {
-            node.widgets.splice(wi, 1);
-            node.widgets.splice(node.widgets.indexOf(gpW) + 1, 0, w);
-        }
     }
     node._amdIdea = ta;
 }
@@ -162,11 +172,7 @@ app.registerExtension({
             const r = onCreated?.apply(this, arguments);
             const node = this;
 
-            const overridesW = findWidget(node, "scene_overrides");
-            if (overridesW) {
-                overridesW.computeSize = () => [0, -4];
-                if (overridesW.inputEl) overridesW.inputEl.style.display = "none";
-            }
+            hideStockWidget(findWidget(node, "scene_overrides"));
             const numW = findWidget(node, "num_scenes");
             if (numW) {
                 const orig = numW.callback;
