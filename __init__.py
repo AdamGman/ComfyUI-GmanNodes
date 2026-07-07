@@ -457,6 +457,7 @@ class AMD_SceneWriter:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("scene_path",)
     FUNCTION = "write"
+    OUTPUT_NODE = True  # writes a file + emits a thumbnail; must count as a graph output standalone
 
     @classmethod
     def INPUT_TYPES(cls):
