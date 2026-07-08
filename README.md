@@ -31,9 +31,9 @@ The included workflow is just the recommended wiring — **the nodes are the pro
 
 ---
 
-## You approve the film before it renders
+## Want approval power? Storyboard first (optional)
 
-Queue once in **`1) storyboard`**: one picture per scene in minutes, laid out like an edit bay — timecodes, the script under each shot, and a **location chip** on every tile so you can see which scenes share a place. The board previews the *actual* film: tiles are built on the same room anchors the movie will use, so what you approve is what renders. Like it? Flip the switch to **`2) storyboard to movie`**, queue again — the movie reuses the board's groundwork for free, every scene comes back with motion and a generated soundtrack, and the film lands as one MP4 that plays right on the node.
+The fastest path is one click — but if you'd rather see the movie before spending render time, queue once in **`1) Storyboard`**: one picture per scene in minutes, laid out like an edit bay with timecodes, the script under each shot, and a **location chip** on every tile so you can see which scenes share a place. Like it? Flip the switch to **`2) Storyboard To Movie`**, queue again — **every scene starts on the exact picture you approved** (that's the point of a storyboard), comes back with motion and a generated soundtrack, and the film lands as one MP4 that plays right on the node.
 
 ![storyboard](docs/storyboard_v3.png)
 
@@ -46,8 +46,9 @@ cd ComfyUI/custom_nodes
 git clone https://github.com/AdamGman/ComfyUI-GmanNodes
 ```
 
-Restart ComfyUI → open **`example_workflows/Auto Movie Director.json`** → type your idea → Queue.
-That's the storyboard. Approve it, flip the mode switch to `2) storyboard to movie`, Queue again. 🍿
+Restart ComfyUI → open **`example_workflows/Auto Movie Director.json`** → type your idea → set the mode switch to `3) Auto Movie` → Queue. 🍿 That's the whole thing — script, scenes, sound and editing happen on their own.
+
+Want to check it before the long render? Mode `1) Storyboard` shows you one picture per scene in minutes; approve it, flip to `2) Storyboard To Movie` and every scene starts on the exact picture you saw.
 
 ## How long does it take?
 
@@ -65,10 +66,10 @@ That's the storyboard. Approve it, flip the mode switch to `2) storyboard to mov
 
 **The four modes on the switch:**
 
-1. **`1) storyboard`** — one picture per scene, fast. The board previews the *actual* film: its tiles are built on the same room anchors the movie will use, so what you approve is what renders.
-2. **`2) storyboard to movie`** — THE movie button. The AI designs a handful of recurring places, each gets a rendered anchor picture, and the camera returns to *the same room* every time. Every scene is a fresh camera setup — same hero, new shot, like real film cuts — and each room *remembers what happened in it* (tape the window in scene 9 and it's still taped in scene 14). The rare scene the AI marks as an unbroken take rolls straight on from the previous scene's final image.
-3. **`3) storyboard to movie (exact frames)`** — the strict version: every scene begins on the exact picture you approved.
-4. **`4) quick movie (scenes independent)`** — skips the storyboard idea entirely: every scene invents its own look. Loosest and most random — fun for showcase reels, not for telling one story.
+1. **`1) Storyboard`** — one picture per scene, in minutes. Check the movie before you spend render time on it.
+2. **`2) Storyboard To Movie (Exact Frames)`** — the movie, from your approved board: every scene starts on the exact picture you approved. That's the point of a storyboard.
+3. **`3) Auto Movie (Skip The Storyboard)`** — the one-click movie. The AI designs a handful of recurring places, each gets a rendered anchor picture, and the camera returns to *the same room* every time. Every scene is a fresh camera setup — same hero, new shot, like real film cuts — and each room *remembers what happened in it* (tape the window in scene 9 and it's still taped in scene 14).
+4. **`4) Anthology (Scenes Independent)`** — every scene invents its own look. Loosest and most random — fun for showcase reels, not for telling one story.
 
 > Long films: launch ComfyUI with `--cache-lru 60` (the included start script does) to keep RAM bounded across many scenes.
 
@@ -123,8 +124,8 @@ output/auto_movie/<your_movie_title>_<id>/
 <summary><b>Tips that matter</b></summary>
 
 - **Character consistency**: describe your hero *physically* in the idea — body plan, hair, clothes, eye color, size ("a woman in her late 50s with silver hair in a low bun, a terracotta apron…"). The planner repeats those exact facts in every scene prompt.
-- **Keep seed + prompts unchanged** between storyboard and full render — that's how approved frames are matched and how the board's plates cache-hit into the film.
-- **Picking a mode**: `2) storyboard to movie` is the one you want for an actual movie — same hero, same rooms, story state carried. `3` nails every scene to its exact approved picture (and inherits its look). `4` is the freest and most photographic — great for showcase reels. The script is cached, so re-queuing to compare is cheap.
+- **Keep seed + prompts unchanged** between storyboard and movie — that's how your approved pictures are matched to their scenes.
+- **Picking a mode**: in a hurry, `3) Auto Movie` — one click, consistency handled. Want control, `1) Storyboard` then `2) Storyboard To Movie` — the movie matches the pictures you approved. `4) Anthology` is the freest and most photographic — great for showcase reels. The script is cached, so re-queuing to compare is cheap.
 - **A scene stuck in the previous scene's look** (say, a dawn finale that stays night-dark)? That's the unbroken-take anchor binding hard — lower the flow strength dial, or type that scene's override so the time jump is explicit.
 - Long films: launch with `--cache-lru 60` (the included start script does) so RAM stays bounded — without it, 12+ scenes at high res wants 32 GB+ free.
 

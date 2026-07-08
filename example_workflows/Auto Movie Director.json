@@ -9,11 +9,11 @@
       "type": "MarkdownNote",
       "pos": [
         40,
-        -300
+        -320
       ],
       "size": [
         1520,
-        260
+        280
       ],
       "flags": {},
       "order": 0,
@@ -22,7 +22,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# 🎬 AUTO MOVIE DIRECTOR\n\n## 1 — WRITE. Type your movie idea in the big box on the Movie Planner. Pick how many scenes and how many seconds each scene runs.\n\n## 2 — STORYBOARD. On the Movie Renderer, set the mode switch to \"1) storyboard\" and press Queue. In a few minutes you get one picture per scene, laid out like a comic page.\n\n## 3 — APPROVE. Like it? Touch nothing. Want changes? Edit your idea (or type into any scene's own box) and Queue again.\n\n## 4 — MOVIE. Flip the mode switch to \"2) storyboard to movie\" and press Queue. Every scene comes back with motion and sound, joined into one finished MP4 that plays right on the node.\n"
+        "# 🎬 AUTO MOVIE DIRECTOR — Type An Idea, Get A Movie\n\n## FASTEST — Type your movie idea in the big box on the Movie Planner, set the mode switch to \"3) Auto Movie\", press Queue. Done. Script, scenes, camera work, sound and editing all happen on their own — the finished MP4 plays right on the node.\n\n## WANT TO CHECK IT FIRST? — Mode \"1) Storyboard\" gives you one picture per scene in minutes. Happy? Flip to \"2) Storyboard To Movie\" and every scene starts on the exact picture you approved.\n\n## MAKE IT YOURS — Scene count, seconds per scene and style are on the Planner. Type into any scene's own box to override the AI; leave it blank and the AI writes that scene.\n"
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -387,8 +387,8 @@
         60
       ],
       "size": [
-        420,
-        300
+        460,
+        520
       ],
       "flags": {},
       "order": 10,
@@ -397,7 +397,7 @@
       "outputs": [],
       "properties": {},
       "widgets_values": [
-        "# ⬅ THE MODE SWITCH\n\n## 1) storyboard\n### One picture per scene, fast. Look before you spend render time.\n\n## 2) storyboard to movie\n### THE movie button. Same hero, same places, a fresh camera angle every scene.\n\n## 3) storyboard to movie (exact frames)\n### Strict: every scene starts on the exact picture you approved.\n\n## 4) quick movie (scenes independent)\n### Skips the storyboard. Every scene invents its own look.\n\n# Storyboard first → approve → switch to 2 → Queue"
+        "# ⬅ THE MODE SWITCH\n\n## 1) Storyboard\n### One picture per scene, in minutes.\n\n## 2) Storyboard To Movie\n### The movie, from your approved pictures — every scene starts exactly there.\n\n## 3) Auto Movie\n### One click, no storyboard. Same hero, same places, handled automatically.\n\n## 4) Anthology\n### Every scene its own look.\n\n# Fastest: 3\n# Safest: 1 → approve → 2"
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -407,10 +407,10 @@
       "type": "PreviewAny",
       "pos": [
         1660,
-        420
+        640
       ],
       "size": [
-        420,
+        460,
         380
       ],
       "flags": {},
@@ -513,7 +513,7 @@
   ],
   "groups": [
     {
-      "title": "🎛  MODELS — set once",
+      "title": "🎛  MODELS — Set Once",
       "bounding": [
         20,
         -10,
@@ -539,7 +539,7 @@
       "id": 2
     },
     {
-      "title": "🎬  2 · DIRECT → RENDER (mode switch!)",
+      "title": "🎬  2 · PICK A MODE → QUEUE",
       "bounding": [
         1120,
         -10,
@@ -552,12 +552,12 @@
       "id": 3
     },
     {
-      "title": "📋  SCRIPT & HELP",
+      "title": "📋  MODES & SCRIPT",
       "bounding": [
         1640,
         -10,
-        470,
-        820
+        500,
+        1050
       ],
       "color": "#42425c",
       "font_size": 22,

@@ -330,7 +330,7 @@ class AMD_MovieRenderer:
                 "video_vae": ("VAE",),
                 "audio_vae": ("VAE",),
                 "scene_plan": ("STRING", {"forceInput": True}),
-                "mode": (["1) storyboard", "2) storyboard to movie", "3) storyboard to movie (exact frames)", "4) quick movie (scenes independent)"], {"default": "1) storyboard", "tooltip": "1) Make the storyboard: one picture per scene, fast - look it over before spending render time. 2) THE movie button: same hero, same places, a fresh camera angle every scene - and it reuses the storyboard's groundwork for free. 3) Strict version: every scene starts on the exact picture you approved. 4) Skip the storyboard: every scene invents its own look - loosest and most random."}),
+                "mode": (["1) Storyboard", "2) Storyboard To Movie (Exact Frames)", "3) Auto Movie (Skip The Storyboard)", "4) Anthology (Scenes Independent)"], {"default": "1) Storyboard", "tooltip": "1) One picture per scene, in minutes - check the movie before spending render time. 2) Renders the movie from your approved storyboard: every scene starts on its exact picture. 3) One-click movie, no storyboard needed - the AI keeps the same hero and the same places on its own. 4) Every scene invents its own look - loosest, for showcase reels."}),
                 "width": ("INT", {"default": 1536, "min": 256, "max": 2048, "step": 32}),
                 "height": ("INT", {"default": 864, "min": 256, "max": 2048, "step": 32}),
                 "fps": ("INT", {"default": 24, "min": 8, "max": 60}),
@@ -363,8 +363,10 @@ class AMD_MovieRenderer:
                flow_strength=0.9, cut_strength=0.6, **_legacy):
         m = str(mode).lower()
         is_preview = m.startswith("1") or "preview" in m or "editor" in m
-        want_chain = (not is_preview) and (m.startswith("2") or "continuity" in m)
         is_anthology = m.startswith("4") or "anthology" in m or "text2vid" in m or "quick" in m
+        wants_exact = ("exact" in m) or ("lock" in m) or ("img2vid" in m)  # incl. legacy mode-3 strings
+        want_chain = (not is_preview) and (not is_anthology) and (not wants_exact) and \
+            (m.startswith("3") or "auto" in m or "continuity" in m)
         want_i2v = (not is_preview) and (not want_chain) and (not is_anthology) and bool(use_storyboard_frames)
         return self._render(model, clip, video_vae, audio_vae, scene_plan, is_preview, want_i2v,
                             width, height, fps, steps, cfg, sampler, scheduler, seed,
@@ -465,8 +467,9 @@ class AMD_MovieRenderer:
             g.node("PreviewImage", images=board.out(0))
             g.node("PreviewImage", images=frames_ref)
             msg = (f"STORYBOARD saved to: {board_dir}\\storyboard.png - look it over. "
-                   f"Happy? Flip mode to '2) storyboard to movie' and press Queue again. "
-                   f"(Keep your idea and seed unchanged and the movie reuses this board's groundwork for free.)")
+                   f"Happy? Flip mode to '2) Storyboard To Movie (Exact Frames)' and press Queue again - "
+                   f"every scene will start on the exact picture you just approved. "
+                   f"(Keep your idea and seed unchanged.)")
             return {"result": (msg,), "expand": g.finalize()}
 
         # ---- full movie ----
@@ -474,7 +477,7 @@ class AMD_MovieRenderer:
         use_i2v = want_i2v and all(os.path.isfile(p) for p in frame_files)
         if want_i2v and not use_i2v:
             print(f"[GmanNodes] no matching storyboard pictures for this plan - rendering scenes from text alone. "
-                  f"(Run '1) storyboard' first with the same idea and seed if you want approved pictures to lead.)")
+                  f"(Run '1) Storyboard' first with the same idea and seed if you want approved pictures to lead.)")
 
         g = GraphBuilder()
         the_model = stg_model(g)
