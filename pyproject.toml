@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-gmannodes"
 description = "GmanNodes — Auto Movie Director: type a movie idea, get a finished short film. Ollama writes the script, LTX 2.3 renders every scene with audio, storyboard approval in between, auto-stitched MP4 out."
-version = "0.5.6"
+version = "0.5.7"
 license = { text = "MIT" }
 authors = [{ name = "AdamGman" }]
 dependencies = ["imageio-ffmpeg"]
