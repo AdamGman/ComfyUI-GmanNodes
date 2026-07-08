@@ -58,9 +58,11 @@ _PLANNER_SYSTEM = (
     "11. Design LOCATIONS: 2-5 recurring places, each pinned in one sentence of exact reusable words "
     "(architecture, furniture, colors, window placement). Films RETURN to places - reuse locations across "
     "scenes instead of inventing a new place per scene.\n"
-    "12. Tag every scene with its location id and a continuity value: 'flow' when it directly continues the "
-    "previous scene's action in the same location with no time jump, otherwise 'cut'. Use runs of 2-4 'flow' "
-    "scenes for the important moments so action visibly carries across cuts."
+    "12. Tag every scene with its location id and a continuity value. The DEFAULT is 'cut': the next written "
+    "scene of the movie - a NEW camera setup and framing, time may pass, and the same characters and places "
+    "persist. That is normal film grammar. Tag 'flow' ONLY for the rare deliberate unbroken take where the "
+    "camera must keep rolling straight into the next scene with zero time jump - at most one 'flow' in the "
+    "whole film, and most films should have none."
 )
 
 
