@@ -313,6 +313,7 @@
         "A small boxy rust-orange robot rolling on two black tank treads, with one big round glowing cyan eye in a dome head and two thin piston arms, tends a rooftop garden in a rainy cyberpunk city. It discovers a single glowing blue flower, shields it through a night storm, and at dawn the whole rooftop blooms.",
         12,
         5.0,
+        "Live-Action Photoreal",
         "photorealistic, moody volumetric light, shallow depth of field, rich detail, full frame composition",
         true,
         "qwen3.6:latest",

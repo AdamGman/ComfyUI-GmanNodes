@@ -82,6 +82,21 @@ _PLANNER_SYSTEM = (
     "whole film, and most films should have none."
 )
 
+# The film's MEDIUM - what kind of movie this physically is. Leads every scene prompt
+# and the location plates so the whole film lives in one medium. The 'style' field
+# stays the finer aesthetic dial (light, lens, mood) layered on top.
+_FILM_LOOKS = {
+    "Live-Action Photoreal": "A live-action photorealistic film, real physical materials, natural cinematic light.",
+    "Epic Live-Action Cinema": "An epic live-action film, anamorphic cinema look, monumental scale, volumetric atmosphere, deep contrast.",
+    "Pixar-Style 3D Animation": "A Pixar-style 3D animated film, polished CGI render, soft global illumination, expressive stylized characters, rounded appealing shapes.",
+    "Hand-Drawn Anime": "A hand-drawn anime film, 2D cel animation, clean line art, painted backgrounds, dramatic anime lighting.",
+    "Stop-Motion Claymation": "A stop-motion claymation film, handcrafted clay characters, miniature physical sets, tactile fingerprints and imperfections.",
+    "90s VHS Home Video": "A 1990s VHS camcorder home video, analog tape softness, muted colors, slightly washed highlights.",
+    "35mm Black & White Noir": "A black and white 35mm film noir, hard key light, deep shadows, smoky atmosphere, high contrast.",
+    "Watercolor Animation": "A watercolor animated film, hand-painted washes, soft bleeding edges, textured paper look.",
+    "Custom (Use Style Box Only)": "",
+}
+
 
 def _ollama_chat(url, model, messages, seed=0, images_b64=None, timeout=600):
     body = {
@@ -203,7 +218,8 @@ class AMD_MoviePlanner:
                 "global_prompt": ("STRING", {"multiline": True, "default": "A lone lighthouse keeper discovers a tiny glowing whale stranded in a tide pool and helps it return to the sea during a storm."}),
                 "num_scenes": ("INT", {"default": 4, "min": 1, "max": 24}),
                 "seconds_per_scene": ("FLOAT", {"default": 5.0, "min": 1.0, "max": 10.0, "step": 0.5}),
-                "style": ("STRING", {"multiline": False, "default": "cinematic, photorealistic, shallow depth of field, film grain"}),
+                "film_look": (list(_FILM_LOOKS.keys()), {"default": "Live-Action Photoreal", "tooltip": "What kind of movie this physically is - the medium. Leads every scene and the location anchors so the whole film matches. The style box below adds finer aesthetic notes on top."}),
+                "style": ("STRING", {"multiline": False, "default": "cinematic, shallow depth of field, rich detail, full frame composition", "tooltip": "Extra aesthetic notes appended to every scene (light, lens, mood). The Film Look above sets the medium."}),
                 "use_ollama": ("BOOLEAN", {"default": True}),
                 "ollama_model": ("STRING", {"default": "qwen3.6:latest", "tooltip": "Any Ollama model name. If it isn't installed, it is downloaded automatically on first use."}),
                 "ollama_url": ("STRING", {"default": "http://127.0.0.1:11434"}),
@@ -236,8 +252,14 @@ class AMD_MoviePlanner:
             print(f"[GmanNodes] image caption skipped: {e}")
             return ""
 
+    @classmethod
+    def VALIDATE_INPUTS(cls, film_look=None):
+        return True  # accept look names from older/newer saved workflows
+
     def plan(self, global_prompt, num_scenes, seconds_per_scene, style, use_ollama,
-             ollama_model, ollama_url, scene_overrides, llm_seed, image=None):
+             ollama_model, ollama_url, scene_overrides, llm_seed, image=None,
+             film_look="Live-Action Photoreal", **_legacy):
+        look = _FILM_LOOKS.get(str(film_look), "")
         n = int(num_scenes)
         overrides = [ln.strip() for ln in scene_overrides.splitlines()]
         overrides += [""] * (n - len(overrides))
@@ -253,7 +275,7 @@ class AMD_MoviePlanner:
         if use_ollama and need_auto:
             brief = global_prompt if not caption else f"{global_prompt}\n\nVisual reference to honor: {caption}"
             user_msg = (
-                f"Movie brief: {brief}\n\nVisual style: {style}\n\n"
+                f"Movie brief: {brief}\n\nThe film's medium: {look or 'set by the style field'}\nVisual style: {style}\n\n"
                 f"Write a cohesive short-film plot for exactly {n} scenes of ~{seconds_per_scene:.0f} seconds each, "
                 f"following three-act structure with the climax about three quarters of the way through. "
                 f'Also write a "character_sheet": ONE sentence physically describing the recurring subject(s) in '
@@ -314,6 +336,8 @@ class AMD_MoviePlanner:
             full = f"{sheet} {core}".strip() if sheet and sheet.lower() not in core.lower() else core
             if style and style.lower() not in full.lower():
                 full = f"{full} {style}"
+            if look:
+                full = f"{look} {full}"  # the medium leads: early tokens weigh most
             m = scene_meta[i] if i < len(scene_meta) else {"location": "", "continuity": "cut"}
             loc = m["location"] if m["location"] in locations else loc_ids[0]
             cont = "flow" if (m["continuity"] == "flow" and i > 0) else "cut"
@@ -323,7 +347,8 @@ class AMD_MoviePlanner:
                           "location": loc, "continuity": cont})
 
         plan = {"plot": plot, "sheet": sheet, "global_prompt": global_prompt,
-                "locations": locations, "scenes": final}
+                "locations": locations, "scenes": final,
+                "style": style, "film_look": look}
         pretty = (f"PLOT\n{plot}\n\nCHARACTER SHEET\n{sheet}\n\n" if plot or sheet else "") + \
             "\n\n".join(f"[Scene {s['index'] + 1} - {s['seconds']:.1f}s]\n{s['core']}" for s in final)
         return {"ui": {"scene_texts": [s["core"] for s in final]},
@@ -425,14 +450,15 @@ class AMD_MovieRenderer:
             """One anchor plate per recurring location. Same seeds/text at same size cache-hit
             between the storyboard run and the film run."""
             locations = plan.get("locations") or {"A": f"the main setting of: {plan.get('global_prompt', '')[:180]}"}
-            style_tail = ""
-            if scenes:
+            style_tail = plan.get("style", "")
+            look = plan.get("film_look", "")
+            if not style_tail and scenes:  # legacy plans carry no style field - recover it from scene 1
                 prefix = f"{plan.get('sheet', '')} {scenes[0].get('core', '')}".strip()
                 if scenes[0]["prompt"].startswith(prefix):
                     style_tail = scenes[0]["prompt"][len(prefix):].strip()
             refs = {}
             for li, (lid, desc) in enumerate(locations.items()):
-                ptxt = f"{desc}, empty of people, no people, cinematic still. {style_tail}".strip()
+                ptxt = f"{look} {desc}, empty of people, no people, cinematic still. {style_tail}".strip()
                 penc = g.node("CLIPTextEncode", clip=clip, text=ptxt)
                 pzero = g.node("ConditioningZeroOut", conditioning=penc.out(0))
                 pcond = g.node("LTXVConditioning", positive=penc.out(0), negative=pzero.out(0), frame_rate=float(fps))

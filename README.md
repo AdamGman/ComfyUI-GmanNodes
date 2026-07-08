@@ -61,8 +61,9 @@ Want to check it before the long render? Mode `1) Storyboard` shows you one pict
 | **Scenes**: 1–24, each with its own optional prompt box | **Resolution**: anything /32 up to 2048² (1536×864 = 24 GB sweet spot) |
 | **Length**: any seconds per scene (frames auto-snap to LTX's grid) | **Frame rate**: 8–60 fps (24 = cinema) |
 | **LLM**: any [Ollama model](https://ollama.com/library) by name — **auto-downloaded** if missing | **Sampler / scheduler / steps / cfg / seed**: fully exposed |
-| **Style**: one field appended to every scene | **Continuity dials**: how hard scenes stick to their room, their approved picture, or an unbroken take |
-| **Per-scene overrides**: your line beats the AI's | **Storyboard size**: leave at 0 (= movie width) and the movie **reuses the board's groundwork free** |
+| **Film Look**: pick the medium - live-action, epic cinema, Pixar-style 3D, anime, claymation, VHS, noir, watercolor | **Continuity dials**: how hard scenes stick to their room, their approved picture, or an unbroken take |
+| **Style**: finer aesthetic notes (light, lens, mood) on top of the Film Look | **Storyboard size**: leave at 0 (= movie width) and the movie **reuses the board's groundwork free** |
+| **Per-scene overrides**: your line beats the AI's | **Output**: project folders per movie + optional extra save location |
 
 **The four modes on the switch:**
 
